@@ -40,9 +40,12 @@ class MySA():
 
 
     def initialize_tour(self):
-        # initialize a tour by greedy algorithm
-        tour = solver_random.solve(self.cities)
-        #tour = solver_greedy.solve(self.cities)
+        if self.N < 50:
+            # initialize a tour by greedy algorithm
+            tour = solver_random.solve(self.cities)
+        else:
+            tour = solver_greedy.solve(self.cities)
+
         cur_distance = self.total_dist(tour)
 
         if cur_distance < self.best_distance:  # If best found so far, update best distance

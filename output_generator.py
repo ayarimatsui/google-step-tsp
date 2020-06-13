@@ -5,6 +5,7 @@ from common import format_tour, read_input
 
 import solver_2_opt
 import solver_my_sa
+import solver_sa_and_2opt
 
 CHALLENGES = 7
 
@@ -12,8 +13,8 @@ CHALLENGES = 7
 def generate_output():
     for i in range(CHALLENGES):
         cities = read_input(f'input_{i}.csv')
-        solver = solver_my_sa
-        name = 'my_sa'
+        solver = solver_sa_and_2opt
+        name = 'sa_&_2opt'
         #solver = solver_2_opt
         #name = '2_opt'
         tour = solver.solve(cities)
