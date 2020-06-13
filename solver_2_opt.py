@@ -10,6 +10,7 @@ from solver_greedy import distance
 #2-opt法
 def solve(cities):
     N = len(cities)
+    # initialize the tour by the greedy algorithm
     tour = solver_greedy.solve(cities)
     while True:
         count = 0
