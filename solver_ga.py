@@ -25,14 +25,37 @@ class GA():
         else:
             self.mutation_rate = mutation_rate
         if generations is None:
-            self.generations = 1000  # a parameter to change
+            self.generations = 500  # a parameter to change
         else:
             self.generations = generations
+    
+
+    # greedy algorithm
+    def solve_greedy(self):
+
+        dist = [[0] * self.N for i in range(self.N)]
+        for i in range(self.N):
+            for j in range(i, self.N):
+                dist[i][j] = dist[j][i] = self.distance(i, j)
+
+        current_city = random.randrange(self.N)
+        unvisited_cities = list(range(self.N))
+        unvisited_cities.pop(current_city)
+        tour = [current_city]
+
+        while unvisited_cities:
+            next_city = min(unvisited_cities,
+                            key=lambda city: dist[current_city][city])
+            unvisited_cities.remove(next_city)
+            tour.append(next_city)
+            current_city = next_city
+        return tour
 
 
     # create a tour randomly
     def create_rand_tour(self):
-        tour = solver_random.solve(self.cities)
+        tour = self.solve_greedy()
+        #tour = random.sample(list(range(self.N)), self.N)
         return tour
 
 
