@@ -8,11 +8,12 @@ from common import print_tour, read_input
 import solver_random
 import solver_greedy
 import solver_2_opt
+import solver_ts
 
 
 class MySA():
 
-    def __init__(self, cities, T=None, alpha=None, stopping_T=None, stopping_iter=None):
+    def __init__(self, cities, initialize, T=None, alpha=None, stopping_T=None, stopping_iter=None):
         self.cities = cities
         self.N = len(cities)
         if T is None:
@@ -37,22 +38,56 @@ class MySA():
         self.best_tour = None
         self.best_distance = float("Inf")
         self.distance_list = []
+        self.initialize = initialize
+
+
+    # greedy algorithm
+    def solve_greedy(self):
+
+        dist = [[0] * self.N for i in range(self.N)]
+        for i in range(self.N):
+            for j in range(i, self.N):
+                dist[i][j] = dist[j][i] = self.distance(i, j)
+
+        current_city = random.randrange(self.N)
+        unvisited_cities = list(range(self.N))
+        unvisited_cities.pop(current_city)
+        tour = [current_city]
+
+        while unvisited_cities:
+            next_city = min(unvisited_cities,
+                            key=lambda city: dist[current_city][city])
+            unvisited_cities.remove(next_city)
+            tour.append(next_city)
+            current_city = next_city
+        return tour
 
 
     def initialize_tour(self):
-        if self.N < 50:
-            # initialize a tour by greedy algorithm
-            tour = solver_random.solve(self.cities)
+        if self.initialize is None:
+            if self.N < 50:
+                # initialize a tour by greedy algorithm
+                tour = random.sample(list(range(self.N)), self.N)
+                #tour = solver_random.solve(self.cities)
+            else:
+                tour = self.solve_greedy()
+                #tour = solver_greedy.solve(self.cities)
+
+            cur_distance = self.total_dist(tour)
+
+            if cur_distance < self.best_distance:  # If best found so far, update best distance
+                self.best_distance = cur_distance
+                self.best_tour = tour
+            self.distance_list.append(cur_distance)
+            return tour, cur_distance
         else:
-            tour = solver_greedy.solve(self.cities)
-
-        cur_distance = self.total_dist(tour)
-
-        if cur_distance < self.best_distance:  # If best found so far, update best distance
-            self.best_distance = cur_distance
-            self.best_tour = tour
-        self.distance_list.append(cur_distance)
-        return tour, cur_distance
+            tour = self.initialize
+            distance = self.total_dist(tour)
+            if distance < self.best_distance:  # If best found so far, update best distance
+                self.best_distance = distance
+                self.best_tour = tour
+            self.distance_list.append(distance)
+            return tour, distance
 
 
     # calculate distance between two cities
@@ -102,7 +137,7 @@ class MySA():
             i = random.randint(0, self.N - l)
             candidate_tour[i : (i + l)] = reversed(candidate_tour[i : (i + l)])
             self.accept(candidate_tour)
-            if self.iteration >= 1000:
+            if self.iteration >= 10000:
                 self.alpha = 0.996
             self.T *= self.alpha
             self.iteration += 1
@@ -135,12 +170,16 @@ class MySA():
 
 
 # solve function
-def solve(cities):
-    my_SA = MySA(cities)
+def solve(cities, initialize=None):
+    my_SA = MySA(cities, initialize=None)
     #tour = my_SA.batch_anneal()
     tour = my_SA.anneal()
     return tour
 
+def solve_with_initial(cities, initialize, alpha, stopping_T, stopping_iter):
+    my_SA = MySA(cities, initialize, alpha=alpha, stopping_T=stopping_T, stopping_iter=stopping_iter)
+    tour = my_SA.anneal()
+    return tour
 
 
 if __name__ == '__main__':

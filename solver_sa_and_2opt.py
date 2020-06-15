@@ -25,7 +25,7 @@ def solve(cities):
     best_distance = float('Inf')
     best_tour = None
 
-    for _ in range(3):
+    for _ in range(5):
         # initialize with the SA tour
         tour = solver_my_sa.solve(cities)
         
@@ -53,8 +53,13 @@ def solve(cities):
             best_distance = dist
             best_tour = tour
 
-    print('the distance is {}'.format(best_distance))
-    return best_tour
+    #print('the distance so far is {}'.format(best_distance))
+    #print('------final SA process------')
+    #best_tour = solver_my_sa.solve_with_initial(cities, best_tour, alpha=0.9999999, stopping_T=1e-100, stopping_iter=10000)
+    #best_distance = total_dist(cities, best_tour)
+
+    print('the final distance is {}'.format(best_distance))
+    return best_tour, best_distance
 
 
 if __name__ == '__main__':
