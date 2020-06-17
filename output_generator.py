@@ -11,7 +11,7 @@ CHALLENGES = 7
 
 
 def generate_output():
-    for i in range(5, CHALLENGES):
+    for i in range(6, CHALLENGES):
         cities = read_input(f'input_{i}.csv')
         solver = solver_sa_and_2opt
         name = 'sa_&_2opt'

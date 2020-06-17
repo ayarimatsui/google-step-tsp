@@ -66,12 +66,11 @@ class MySA():
     def initialize_tour(self):
         if self.initialize is None:
             if self.N < 50:
-                # initialize a tour by greedy algorithm
+                # initialize a tour with random
                 tour = random.sample(list(range(self.N)), self.N)
-                #tour = solver_random.solve(self.cities)
             else:
+                # initialize a tour by greedy algorithm
                 tour = self.solve_greedy()
-                #tour = solver_greedy.solve(self.cities)
 
             cur_distance = self.total_dist(tour)
 
@@ -127,7 +126,7 @@ class MySA():
 
     # annealing process
     def anneal(self):
-        # Initialize with the greedy tour.
+        # Initialize tour.
         self.cur_tour, self.cur_distance = self.initialize_tour()
 
         print("Starting annealing.")
@@ -147,32 +146,13 @@ class MySA():
 
         print("Best distance obtained: ", self.best_distance)
         improvement = 100 * (self.distance_list[0] - self.best_distance) / (self.distance_list[0])
-        print(f"Improvement over greedy heuristic: {improvement : .2f}%")
+        print(f"Improvement over first distance: {improvement : .2f}%")
         return self.best_tour
-
-
-    # iterate annealing process
-    def batch_anneal(self, times=10):
-        best_dist = float("Inf")
-        best_tour = None
-        for i in range(1, times + 1):
-            print(f"Iteration {i}/{times} -------------------------------")
-            self.T = self.T_save
-            self.iteration = 1
-            self.cur_tour, self.cur_distance = self.initialize_tour()
-            tour = self.anneal()
-            if self.best_distance < best_dist:
-                best_dist = self.best_distance
-                best_tour = tour
-        print('best distance is : {}'.format(best_dist))
-        return best_tour
-
 
 
 # solve function
 def solve(cities, initialize=None):
     my_SA = MySA(cities, initialize=None)
-    #tour = my_SA.batch_anneal()
     tour = my_SA.anneal()
     return tour
 
@@ -186,6 +166,6 @@ if __name__ == '__main__':
     assert len(sys.argv) > 1
     cities = read_input(sys.argv[1])
     tour = solve(cities)
-    #print_tour(tour)
+    print_tour(tour)
 
     
