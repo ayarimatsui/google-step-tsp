@@ -204,10 +204,10 @@ def solve(cities):
     best_tour = None
 
     # initialize with the SA tour
-    sa_tour = solver_my_sa.solve(cities)
-    sa_tour = solve_2opt(cities, sa_tour)
+    #sa_tour = solver_my_sa.solve(cities)
+    #sa_tour = solve_2opt(cities, sa_tour)
     # initialize with 2-opt tour
-    #sa_tour = solver_2_opt.solve(cities)
+    sa_tour = solver_2_opt.solve(cities)
     best_dist = total_distance(cities, sa_tour)
     print('the first distance is : {}'.format(best_dist))
 
@@ -220,7 +220,7 @@ def solve(cities):
 
     for _ in range(10):
         # 分割数
-        split = 24
+        split = 40
         # choose a city to start randomly
         points = []
         for i in range(split):
@@ -349,6 +349,7 @@ def solve(cities):
         if dist < best_distance:
             best_distance = dist
             best_tour = tour
+            sa_tour = tour  # 元tourを更新
 
 
     print('the final distance is {}'.format(best_distance))
