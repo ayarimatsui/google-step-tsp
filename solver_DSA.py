@@ -7,6 +7,7 @@ import sys
 import math
 import random
 import multiprocessing
+from multiprocessing import Pool
 from common import print_tour, read_input
 import solver_my_sa
 import solver_2_opt
@@ -218,9 +219,9 @@ def solve(cities):
     best_distance = total_distance(cities, sa_tour)
     best_tour = sa_tour'''
 
-    for _ in range(10):
+    for _ in range(30):
         # 分割数
-        split = 40
+        split = 32
         # choose a city to start randomly
         points = []
         for i in range(split):
@@ -275,10 +276,12 @@ def solve(cities):
         print(len(first_tour) + len(second_tour) + len(third_tour))'''
         manager = multiprocessing.Manager()
         proc_dic = manager.dict()
-        processes = []
+        #processes = []
+        p = Pool(split)
         for i in range(split):
-            p = multiprocessing.Process(target=solve_each_sa, args=(i, proc_dic, cities, tours[i], city_distance_list,))
-            processes.append(p)
+            p.apply_async(solve_each_sa, args=(i, proc_dic, cities, tours[i], city_distance_list,))
+            #p = multiprocessing.Process(target=solve_each_sa, args=(i, proc_dic, cities, tours[i], city_distance_list,))
+            #processes.append(p)
 
         '''
         p1 = multiprocessing.Process(target=solve_each_sa, args=(1, proc_dic, cities, first_tour, city_distance_list,))
@@ -287,8 +290,8 @@ def solve(cities):
         p4 = multiprocessing.Process(target=solve_each_sa, args=(4, proc_dic, cities, fourth_tour, city_distance_list,))'''
 
         # start the processes
-        for p in processes:
-            p.start()
+        #for p in processes:
+            #p.start()
 
         '''
         p1.start()
@@ -297,8 +300,10 @@ def solve(cities):
         p4.start()'''
         
         # プロセス終了待ち合わせ
-        for p in processes:
-            p.join()
+        #for p in processes:
+            #p.join()
+        p.close()
+        p.join()
 
         '''
         p1.join()
