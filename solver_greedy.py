@@ -2,6 +2,7 @@
 
 import sys
 import math
+import random
 
 from common import print_tour, read_input
 
@@ -18,8 +19,9 @@ def solve(cities):
         for j in range(i, N):
             dist[i][j] = dist[j][i] = distance(cities[i], cities[j])
 
-    current_city = 0
-    unvisited_cities = set(range(1, N))
+    current_city = random.randrange(N)
+    unvisited_cities = list(range(N))
+    unvisited_cities.pop(current_city)
     tour = [current_city]
 
     while unvisited_cities:
