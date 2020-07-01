@@ -66,7 +66,6 @@ class SAWithStartandGoal():
 
 
     def initialize_tour(self):
-        '''
         # initialize a tour with random
         mid_tour = self.initial_tour[1:-1]
         tour = random.sample(mid_tour, len(mid_tour))
@@ -81,7 +80,7 @@ class SAWithStartandGoal():
             tour.append(self.goal)
         else:
             # initialize a tour by greedy algorithm
-            tour = self.solve_greedy()
+            tour = self.solve_greedy()'''
 
         cur_distance = self.total_dist(tour)
 
