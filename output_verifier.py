@@ -12,11 +12,11 @@ def distance(city1, city2):
 
 
 def verify_output():
-    for challenge_number in range(CHALLENGES):
+    for challenge_number in range(6, CHALLENGES):
         print(f'Challenge {challenge_number}')
         cities = read_input(f'input_{challenge_number}.csv')
         N = len(cities)
-        for output_prefix in ('output', 'sample/random', 'sample/greedy', 'sample/sa', 'my_output/2_opt', 'my_output/my_sa', 'my_output/sa_&_2opt'):
+        for output_prefix in ('output', 'my_output/dsa'):
             output_file = f'{output_prefix}_{challenge_number}.csv'
             with open(output_file) as f:
                 lines = f.readlines()

@@ -219,7 +219,7 @@ def solve(cities):
     best_distance = total_distance(cities, sa_tour)
     best_tour = sa_tour'''
 
-    for _ in range(30):
+    for _ in range(1000):
         # 分割数
         split = 32
         # choose a city to start randomly
