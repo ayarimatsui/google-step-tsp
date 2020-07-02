@@ -24,7 +24,7 @@ def generate_output():
             tour, distance = solver.solve(cities)
             if distance <= record[i]:
                 break
-        with open(f'my_output/{name}_{i}_1.csv', 'w') as f:
+        with open(f'my_output/{name}_{i}_2.csv', 'w') as f:
             f.write(format_tour(tour) + '\n')
         '''
         for solver, name in ((solver_2_opt, '2_opt')):
