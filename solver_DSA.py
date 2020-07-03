@@ -208,7 +208,11 @@ def solve(cities):
     #sa_tour = solver_my_sa.solve(cities)
     #sa_tour = solve_2opt(cities, sa_tour)
     # initialize with 2-opt tour
-    sa_tour = solver_2_opt.solve(cities)
+    with open('my_output/dsa_6.csv') as f:
+        lines = f.readlines()
+        assert lines[0].strip() == 'index'
+        sa_tour = [int(i.strip()) for i in lines[1:N + 1]]
+    #sa_tour = solver_2_opt.solve(cities)
     best_dist = total_distance(cities, sa_tour)
     print('the first distance is : {}'.format(best_dist))
 
@@ -221,7 +225,7 @@ def solve(cities):
 
     for _ in range(1000):
         # 分割数
-        split = 32
+        split = 36
         # choose a city to start randomly
         points = []
         for i in range(split):

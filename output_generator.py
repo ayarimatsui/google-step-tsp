@@ -18,7 +18,7 @@ def generate_output():
         name = 'dsa'
         #solver = solver_2_opt
         #name = '2_opt'
-        record = [3292, 3779, 4495, 8150, 10676, 20273, 40500, 84000]
+        record = [3292, 3779, 4495, 8150, 10676, 20273, 40000, 84000]
         tour, distance = solver.solve(cities)
         while distance > record[i]:
             tour, distance = solver.solve(cities)
