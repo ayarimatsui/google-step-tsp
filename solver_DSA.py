@@ -6,7 +6,7 @@
 # 1st Step. initialize a tour with 2-opt algorithm
 # 2nd Step. choose a city (= city A) randomly and define split number (= split). (split = 32 for Challenge 6, split = 96 for Challenge 7)
 # 3rd Step. According to current tour, choose (split - 1) cities which are 1 * (N / split), 2 * (N / split), 3 * (N / split), ..., (split - 1) * (N / split) away from city A as split points
-# 4th Step. Split the whole tour into split number by the split points and optimize each tours with SA algorithm.
+# 4th Step. Split the whole tour into split number by the split points and optimize each tours with SA algorithm. (used multi process)
 # 5th Step. Unite all optimized splited tours into one tour and if the total distance is better than the record, update the whole tour.
 # 6th Step. repeat 2nd Step ~ 5th Step for n times. (n = 2000 for Challenge 6, n = 200 for Challenge 7)
 #################################
