@@ -1,7 +1,15 @@
 # Google STEP Program week7 homework
 # TSP Problem
 # divide and conquer algorithm with Simulated Annealing Algorithm
-# 2/3DSA
+
+#################################
+# 1st Step. initialize a tour with 2-opt algorithm
+# 2nd Step. choose a city (= city A) randomly and define split number (= split). (split = 32 for Challenge 6, split = 96 for Challenge 7)
+# 3rd Step. According to current tour, choose (split - 1) cities which are 1 * (N / split), 2 * (N / split), 3 * (N / split), ..., (split - 1) * (N / split) away from city A as split points
+# 4th Step. Split the whole tour into split number by the split points and optimize each tours with SA algorithm.
+# 5th Step. Unite all optimized splited tours into one tour and if the total distance is better than the record, update the whole tour.
+# 6th Step. repeat 2nd Step ~ 5th Step for n times. (n = 2000 for Challenge 6, n = 200 for Challenge 7)
+#################################
 
 import sys
 import math
@@ -46,7 +54,7 @@ class SAWithStartandGoal():
         self.distance_list = []
         
 
-    # greedy algorithm
+    # greedy algorithm with start and goal
     def solve_greedy(self):
         current_city = self.start
         goal_city = self.goal
@@ -66,13 +74,6 @@ class SAWithStartandGoal():
 
 
     def initialize_tour(self):
-        '''
-        # initialize a tour with random
-        mid_tour = self.initial_tour[1:-1]
-        tour = random.sample(mid_tour, len(mid_tour))
-        tour.insert(0, self.start)
-        tour.append(self.goal)
-        '''
         if self.N < 50:
             # initialize a tour with random
             mid_tour = self.initial_tour[1:-1]
@@ -154,6 +155,7 @@ class SAWithStartandGoal():
         return self.best_tour
 
 
+# optimize each splited tours
 def solve_each_sa(proc_num, proc_dic, cities, initial_tour, city_distance_list):
     each_SA = SAWithStartandGoal(cities, initial_tour, city_distance_list)
     tour = each_SA.anneal()
@@ -204,30 +206,18 @@ def solve(cities):
     best_distance = float('Inf')
     best_tour = None
 
-    # initialize with the SA tour
-    #sa_tour = solver_my_sa.solve(cities)
-    #sa_tour = solve_2opt(cities, sa_tour)
     # initialize with 2-opt tour
-    with open('my_output/dsa_7.csv') as f:
-        lines = f.readlines()
-        assert lines[0].strip() == 'index'
-        sa_tour = [int(i.strip()) for i in lines[1:N + 1]]
-    #sa_tour = solver_2_opt.solve(cities)
-    best_dist = total_distance(cities, sa_tour)
+    original_tour = solver_2_opt.solve(cities)
+    best_dist = total_distance(cities, original_tour)
     print('the first distance is : {}'.format(best_dist))
 
-    '''
-    # initialize with the SA tour
-    sa_tour = solver_my_sa.solve(cities)
-    sa_tour = solve_2opt(cities, sa_tour)
-    best_distance = total_distance(cities, sa_tour)
-    best_tour = sa_tour'''
 
-    for _ in range(100):
-        # 分割数
-        split = 112
+    for _ in range(200):  # iterate for 2000 times for challenge 6, 200 times for challenge 7
+        # split number 
+        split = 96   # split in 32 for challenge 6, in 96 for challenge 7
+
         # choose a city to start randomly
-        points = []
+        points = []  # a list that contains the city ids which are the first of each splited route.
         for i in range(split):
             if i == 0:
                 points.append(random.randrange(N))
@@ -235,120 +225,29 @@ def solve(cities):
                 point = (points[-1] + N // split)
                 points.append(point)
         
-        tours = []
-        doubled_sa_tour = sa_tour + sa_tour
+        tours = []  # contains splited tours
+        doubled_original_tour = original_tour + original_tour
         for i in range(split):
             if i < split - 1:
-                splited_tour = doubled_sa_tour[points[i % split] : points[(i + 1) % split]]
+                splited_tour = doubled_original_tour[points[i % split] : points[(i + 1) % split]]
             else:
-                splited_tour = doubled_sa_tour[points[i % split] : points[0] + N]
+                splited_tour = doubled_original_tour[points[i % split] : points[0] + N]
             tours.append(splited_tour)
 
-        '''
-        if N % 3 == 0:
-            one_third_from_start = (start + N // 3) % N
-            two_third_from_start = (one_third_from_start + N // 3) % N
-        elif N % 3 == 1:
-            one_third_from_start = (start + N // 3) % N
-            two_third_from_start = (one_third_from_start +  1 + N // 3) % N
-        else:
-            one_third_from_start = (start + 1 +  N // 3) % N
-            two_third_from_start = (one_third_from_start + N // 3) % N'''
-        '''
-        if one_third_from_start < start:
-            first_tour = sa_tour[start : N] + sa_tour[:one_third_from_start]
-            second_tour = sa_tour[one_third_from_start : two_third_from_start]
-            third_tour = sa_tour[two_third_from_start : start]
-        elif two_third_from_start < one_third_from_start:
-            first_tour = sa_tour[start : one_third_from_start]
-            second_tour = sa_tour[one_third_from_start : N] + sa_tour[:two_third_from_start]
-            third_tour = sa_tour[two_third_from_start : start]
-        else:
-            first_tour = sa_tour[start : one_third_from_start]
-            second_tour = sa_tour[one_third_from_start : two_third_from_start]
-            third_tour = sa_tour[two_third_from_start : N] + sa_tour[:start]'''
-
-
-        '''
-        print(sa_tour)
-        print('first tour')
-        print(first_tour)
-        print('second tour')
-        print(second_tour)
-        print('third tour')
-        print(third_tour)
-        print(len(first_tour) + len(second_tour) + len(third_tour))'''
+        # use multiprocess
         manager = multiprocessing.Manager()
         proc_dic = manager.dict()
-        #processes = []
         p = Pool(split)
         for i in range(split):
             p.apply_async(solve_each_sa, args=(i, proc_dic, cities, tours[i], city_distance_list,))
-            #p = multiprocessing.Process(target=solve_each_sa, args=(i, proc_dic, cities, tours[i], city_distance_list,))
-            #processes.append(p)
-
-        '''
-        p1 = multiprocessing.Process(target=solve_each_sa, args=(1, proc_dic, cities, first_tour, city_distance_list,))
-        p2 = multiprocessing.Process(target=solve_each_sa, args=(2, proc_dic, cities, second_tour, city_distance_list,))
-        p3 = multiprocessing.Process(target=solve_each_sa, args=(3, proc_dic, cities, third_tour, city_distance_list,))
-        p4 = multiprocessing.Process(target=solve_each_sa, args=(4, proc_dic, cities, fourth_tour, city_distance_list,))'''
-
-        # start the processes
-        #for p in processes:
-            #p.start()
-
-        '''
-        p1.start()
-        p2.start()
-        p3.start()
-        p4.start()'''
-        
-        # プロセス終了待ち合わせ
-        #for p in processes:
-            #p.join()
+            
         p.close()
         p.join()
 
-        '''
-        p1.join()
-        p2.join()
-        p3.join()
-        p4.join()'''
-
-        #tour1 = proc_dic[str(1)] + second_tour + third_tour
-        #tour2 = first_tour + proc_dic[str(2)] + third_tour
-        #tour3 = first_tour + second_tour + proc_dic[str(3)]
+        # unite the each optimized tours into one large tour
         tour = proc_dic[str(0)]
         for i in range(1, split):
             tour += proc_dic[str(i)]
-        #print(len(proc_dic[str(1)]))
-        #print(proc_dic[str(2)])
-        #print(proc_dic[str(3)])
-        #print('number of cities : ' + str(N)  + '    len(tour) = : ' + str(len(tour)))
-        '''
-        tour1 = solve_2opt(cities, tour1)
-        tour2 = solve_2opt(cities, tour2)
-        tour3 = solve_2opt(cities, tour3)
-        tour4 = solve_2opt(cities, tour4)
-        
-        dist1 = total_distance(cities, tour1)
-        dist2 = total_distance(cities, tour2)
-        dist3 = total_distance(cities, tour3)
-        dist4 = total_distance(cities, tour4)
-        
-        if dist1 == min([dist1, dist2, dist3]):
-            dist = dist1
-            tour = tour1
-        elif dist2 == min([dist1, dist2, dist3]):
-            dist = dist2
-            tour = tour2
-        elif dist3 == min([dist1, dist2, dist3]):
-            dist = dist3
-            tour = tour3
-        else:
-            dist = dist4
-            tour = tour4
-            print('the best is tour4')'''
         
         tour = solve_2opt(cities, tour)
         dist = total_distance(cities, tour)
@@ -358,7 +257,7 @@ def solve(cities):
         if dist < best_distance:
             best_distance = dist
             best_tour = tour
-            sa_tour = tour  # 元tourを更新
+            original_tour = tour  # update the original tour
 
 
     print('the final distance is {}'.format(best_distance))
